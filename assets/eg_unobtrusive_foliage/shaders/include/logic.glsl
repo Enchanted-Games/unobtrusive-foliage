@@ -6,8 +6,6 @@
 #define DITHER_NOISE_ORIGINAL_BIAS 40.0
 #define DITHER_NOISE_ANIMATION_SPEED 1200.0
 
-#moj_import <eg_unobtrusive_foliage:noise.glsl>
-
 const mat4 dither_matrix = mat4(
     // https://discourse.urho3d.io/t/screen-door-transparency/5054/2
     1.0 / 17.0,  9.0 / 17.0,  3.0 / 17.0,  11.0 / 17.0,
@@ -31,13 +29,7 @@ void applyDitherMatrix(float dist, vec2 fragCoord) {
 void applyDistanceDither(sampler2D tex, vec2 texCoord, vec3 vertexPos, vec2 screenCoord) {
     int alpha = int(floor(texture(tex, texCoord).a * 255.0));
     if(alpha == 249) {
-        float aspect = ScreenSize.x / ScreenSize.y;
-        float noise = fractalNoise((gl_FragCoord.xy / ScreenSize) * DITHER_NOISE_SIZE * vec2(aspect, 1.0) + (GameTime * DITHER_NOISE_ANIMATION_SPEED));
-
         float fragDist = length(vertexPos);
-
-        // fragDist += clamp(noise / DITHER_NOISE_ORIGINAL_BIAS, 0.0, 1.0);
-
         applyDitherMatrix((fragDist * float(FALLOFF_RANGE)) - float(FALLOFF_START), screenCoord.xy / float(DITHER_PIXEL_SIZE));
     }
 }
